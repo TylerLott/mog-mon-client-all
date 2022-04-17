@@ -90,16 +90,21 @@ export const StreamProvider = ({ children }) => {
     // setup call - should run when first connected on all users they received
     let initStreamsAud = {}
     let initStreamsVid = {}
+    console.log("connected to peer", peer)
+    console.log("my id is ", userId)
     if (users) {
       Object.keys(users).forEach((user) => {
         let conn = peer.connect(user)
+        console.log("i am connecting with", user)
         conn.on("open", () => {
+          console.log("connect was recieved and opened by ", user)
           conn.send(type)
           conn.on("data", (othersType) => {
             let outTracks = []
             outTracks = outTracks.concat(myAudio.getAudioTracks())
             outTracks = outTracks.concat(myVideo.getVideoTracks())
 
+            console.log("calling user", conn.peer)
             let call = peer.call(conn.peer, new MediaStream(outTracks))
             call.on("stream", (remoteStream) => {
               if (type === "host") {
@@ -142,12 +147,15 @@ export const StreamProvider = ({ children }) => {
     let audStreams = { ...audioStreams }
     let vidStreams = { ...videoStreams }
     peerServ.on("call", (call) => {
+      console.log("i was called by", call.peer)
       let outTracks = []
       outTracks = outTracks.concat(myAudio.getAudioTracks())
       outTracks = outTracks.concat(myVideo.getVideoTracks())
       let test = new MediaStream(outTracks)
+      console.log("i answered with", test)
       call.answer(test)
       call.on("stream", (remoteStream) => {
+        console.log("they answered with", remoteStream)
         if (type === "host") {
           vidStreams[call.peer] = {
             muted: getMute(call.peer),
