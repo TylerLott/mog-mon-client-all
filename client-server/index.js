@@ -13,7 +13,7 @@ if (process.env.NODE_ENV !== "production") {
 app.use(express.static(PATH))
 
 // Handles any requests that don't match the ones above
-app.get("*", (req, res) => {
+app.get("/daddyscummies*", (req, res) => {
   res.sendFile(PATH_2)
 })
 
