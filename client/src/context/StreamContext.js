@@ -121,6 +121,7 @@ export const StreamProvider = ({ children }) => {
               console.log("calling user", conn.peer)
               let call = peer.call(conn.peer, new MediaStream(outTracks))
               call.on("stream", (remoteStream) => {
+                console.log("here are the tracks", remoteStream.getTracks())
                 if (type === "host") {
                   initStreamsVid[call.peer] = {
                     stream: new MediaStream(remoteStream.getVideoTracks()),
@@ -170,6 +171,7 @@ export const StreamProvider = ({ children }) => {
       call.answer(test)
       call.on("stream", (remoteStream) => {
         console.log("they answered with", remoteStream)
+        console.log("here are the tracks", remoteStream.getTracks())
         if (type === "host") {
           vidStreams[call.peer] = {
             muted: getMute(call.peer),
