@@ -17,6 +17,7 @@ export const StreamProvider = ({ children }) => {
   const [myAudio, setMyAudio] = useState(null)
   const [myVideo, setMyVideo] = useState(null)
   const [othersType, setOthersType] = useState(null)
+  const [peerConnected, setPeerConnected] = useState(false)
   const { users, hostUnmute, remoteMute, eventMute, myMute, deafen, teams } =
     useSelector((store) => store.entities)
   const { isConnected, roomcode, peerHost, peerPort, peerPath, userId, type } =
@@ -101,6 +102,7 @@ export const StreamProvider = ({ children }) => {
       // setup call - should run when first connected on all users they received
       let initStreamsAud = {}
       let initStreamsVid = {}
+      setPeerConnected(true)
       console.log("connected to peer", peer)
       console.log("my id is ", userId)
       if (users) {
@@ -150,7 +152,7 @@ export const StreamProvider = ({ children }) => {
         conn.send(type)
       })
     })
-  }, [myAudio, myVideo])
+  }, [myAudio, myVideo, peerConnected])
 
   useEffect(() => {
     if (!othersType) return
