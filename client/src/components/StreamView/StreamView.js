@@ -93,19 +93,19 @@ const StreamView = () => {
       // loop through team[viewing].players and set the 4 cam refs
       topLeft.current.srcObject =
         allTeams[viewing].players.length > 0
-          ? videoStreams[allTeams[viewing].players[0]]
+          ? videoStreams[allTeams[viewing].players[0]].stream
           : null
       topRight.current.srcObject =
         allTeams[viewing].players.length > 1
-          ? videoStreams[allTeams[viewing].players[1]]
+          ? videoStreams[allTeams[viewing].players[1]].stream
           : null
       bottomLeft.current.srcObject =
         allTeams[viewing].players.length > 2
-          ? videoStreams[allTeams[viewing].players[2]]
+          ? videoStreams[allTeams[viewing].players[2]].stream
           : null
       bottomRight.current.srcObject =
         allTeams[viewing].players.length > 3
-          ? videoStreams[allTeams[viewing].players[3]]
+          ? videoStreams[allTeams[viewing].players[3]].stream
           : null
       setCurrentTeam(allTeams[viewing].players.map((x) => allUsers[x]))
       setCurrentPlayer(null)
