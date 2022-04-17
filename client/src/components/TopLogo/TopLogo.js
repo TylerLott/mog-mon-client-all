@@ -6,7 +6,11 @@ const TopLogo = () => {
   return (
     <TopLogoContainer>
       {/* <TopSVG /> */}
-      <img src="/lud-twitter.png" alt="top" style={{ width: "100%" }} />
+      <img
+        src="/daddyscummies/lud-twitter.png"
+        alt="top"
+        style={{ width: "100%" }}
+      />
     </TopLogoContainer>
   )
 }
