@@ -157,6 +157,7 @@ export const StreamProvider = ({ children }) => {
   }, [isConnected])
 
   useEffect(() => {
+    if (!peer) return
     if (!myAudio) return
     if (!myVideo) return
     // setup connection
@@ -170,6 +171,7 @@ export const StreamProvider = ({ children }) => {
 
   useEffect(() => {
     if (!othersType) return
+    if (!peer) return
 
     let audStreams = { ...audioStreams }
     let vidStreams = { ...videoStreams }
