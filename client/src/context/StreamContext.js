@@ -120,18 +120,28 @@ export const StreamProvider = ({ children }) => {
 
               console.log("calling user", conn.peer)
               let call = peer.call(conn.peer, new MediaStream(outTracks))
-              call.on("stream", (remoteStream) => {
-                console.log("here are the tracks", remoteStream.getTracks())
-                if (type === "host") {
-                  initStreamsVid[call.peer] = {
-                    stream: new MediaStream(remoteStream.getVideoTracks()),
+              const vid_sender = call.peerConnection
+                .getSenders()
+                .filter((s) => s.track?.kind == "video")[0]
+              const vid_params = vid_sender.getParameters()
+              if ("degradationPreference" in vid_params) {
+                vid_params.degredationPreference = "maintain-framerate"
+              }
+              vid_params.encodings[0].maxBitrate = 4000000
+              vid_sender.setParameters(vid_params).then(() => {
+                call.on("stream", (remoteStream) => {
+                  console.log("here are the tracks", remoteStream.getTracks())
+                  if (type === "host") {
+                    initStreamsVid[call.peer] = {
+                      stream: new MediaStream(remoteStream.getVideoTracks()),
+                      muted: getMute(call.peer),
+                    }
+                  }
+                  initStreamsAud[call.peer] = {
+                    stream: new MediaStream(remoteStream.getAudioTracks()),
                     muted: getMute(call.peer),
                   }
-                }
-                initStreamsAud[call.peer] = {
-                  stream: new MediaStream(remoteStream.getAudioTracks()),
-                  muted: getMute(call.peer),
-                }
+                })
               })
             })
           })
