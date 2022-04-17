@@ -6,7 +6,7 @@ const TopLogo = () => {
   return (
     <TopLogoContainer>
       {/* <TopSVG /> */}
-      <img src="/lud-twitter.jfif" alt="top" style={{ width: "100%" }} />
+      <img src="/lud-twitter.png" alt="top" style={{ width: "100%" }} />
     </TopLogoContainer>
   )
 }
