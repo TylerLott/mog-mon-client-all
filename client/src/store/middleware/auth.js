@@ -13,8 +13,10 @@ const handleError = (func, err) => {
 }
 
 let AUTH_API_URL = "http://localhost:5000/api/auth"
+let SOCKET_PATH = "/api/stepbrother/socket.io"
 if (process.env.NODE_ENV === "production") {
   AUTH_API_URL = "https://ludwigmonday.gg/api/spermbank"
+  SOCKET_PATH = "/"
 }
 
 const authMiddleware = (store) => {
@@ -65,6 +67,7 @@ const authMiddleware = (store) => {
           userId: auth.userId,
           type: auth.type,
         },
+        path: SOCKET_PATH,
       })
 
       // ON CONNECT TO SOCKET SERVER
