@@ -14,7 +14,7 @@ const handleError = (func, err) => {
 
 let AUTH_API_URL = "http://localhost:5000/api/auth"
 if (process.env.NODE_ENV === "production") {
-  AUTH_API_URL = "http://ludwigmonday.gg/api/spermbank"
+  AUTH_API_URL = "https://ludwigmonday.gg/api/spermbank"
 }
 
 const authMiddleware = (store) => {
