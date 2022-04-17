@@ -47,7 +47,6 @@ const StreamView = () => {
   const topRight = useRef()
   const bottomLeft = useRef()
   const bottomRight = useRef()
-  let playerCams = [topLeft, topRight, bottomLeft, bottomRight]
   const playerMain = useRef()
   // host cams
   const hostMain = useRef()
@@ -78,29 +77,39 @@ const StreamView = () => {
       !topRight.current ||
       !bottomLeft.current ||
       !bottomRight.current
-    )
-      if (videoStreams.hasOwnProperty(viewing)) {
-        // set main cam to player
-        playerMain.current.srcObject = videoStreams[viewing].stream
-        let plr = { ...allUsers[viewing] }
-        plr.team = Object.entries(allTeams)
-          .map(([key, val]) => [{ key, ...val }])
-          .filter((x) => x[0].players.includes(viewing))[0][0].key
-        setCurrentPlayer(plr)
-        setCurrentTeam(null)
-      } else if (allTeams.hasOwnProperty(viewing)) {
-        // loop through team[viewing].players and set the 4 cam refs
-        for (let i = 0; i < 4; i++) {
-          if (i < allTeams[viewing].players.length) {
-            playerCams[i].current.srcObject =
-              videoStreams[allTeams[viewing].players[i]].stream
-          } else {
-            playerCams[i].current.srcObject = null
-          }
-        }
-        setCurrentTeam(allTeams[viewing].players.map((x) => allUsers[x]))
-        setCurrentPlayer(null)
-      }
+    ) {
+      return
+    }
+    if (videoStreams.hasOwnProperty(viewing)) {
+      // set main cam to player
+      playerMain.current.srcObject = videoStreams[viewing].stream
+      let plr = { ...allUsers[viewing] }
+      plr.team = Object.entries(allTeams)
+        .map(([key, val]) => [{ key, ...val }])
+        .filter((x) => x[0].players.includes(viewing))[0][0].key
+      setCurrentPlayer(plr)
+      setCurrentTeam(null)
+    } else if (allTeams.hasOwnProperty(viewing)) {
+      // loop through team[viewing].players and set the 4 cam refs
+      topLeft.current.srcObject =
+        allTeams[viewing].players.length > 0
+          ? videoStreams[allTeams[viewing].players[0]]
+          : null
+      topRight.current.srcObject =
+        allTeams[viewing].players.length > 1
+          ? videoStreams[allTeams[viewing].players[1]]
+          : null
+      bottomLeft.current.srcObject =
+        allTeams[viewing].players.length > 2
+          ? videoStreams[allTeams[viewing].players[2]]
+          : null
+      bottomRight.current.srcObject =
+        allTeams[viewing].players.length > 3
+          ? videoStreams[allTeams[viewing].players[3]]
+          : null
+      setCurrentTeam(allTeams[viewing].players.map((x) => allUsers[x]))
+      setCurrentPlayer(null)
+    }
   }, [
     viewing,
     playerMain,
