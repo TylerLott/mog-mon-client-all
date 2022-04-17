@@ -11,6 +11,11 @@
       "src": "1x.png",
       "type": "image/png",
       "sizes": "28x28"
+    },
+    {
+      "src": "lud-twitter.png",
+      "type": "image/png",
+      "sizes": "900x506"
     }
   ],
   "start_url": ".",
