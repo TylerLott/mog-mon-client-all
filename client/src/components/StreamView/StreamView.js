@@ -114,6 +114,14 @@ const StreamView = () => {
 
   useEffect(() => {
     setToggle(!toggle)
+    console.log("video streams", videoStreams)
+    console.log("current team", currentTeam)
+    console.log("current player", currentPlayer)
+    console.log("viewing", viewing)
+    console.log("all teams", allTeams)
+    console.log("all users", allUsers)
+    console.log("team vid refs", topLeft, topRight, bottomLeft, bottomRight)
+    console.log("player vid ref", playerMain)
   }, [viewing])
 
   useEffect(() => {
