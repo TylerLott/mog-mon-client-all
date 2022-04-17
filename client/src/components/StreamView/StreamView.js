@@ -110,6 +110,7 @@ const StreamView = () => {
     bottomRight,
     allUsers,
     allTeams,
+    videoStreams,
   ])
 
   useEffect(() => {
