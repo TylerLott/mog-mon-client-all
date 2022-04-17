@@ -3,6 +3,11 @@ import { createContext, useState, useEffect } from "react"
 import { useSelector } from "react-redux"
 import AudioStream from "./AudioStream"
 
+let PEER_SEC = true
+if (process.env.NODE_ENV !== "production") {
+  PEER_SEC = false
+}
+
 export const StreamContext = createContext()
 
 export const StreamProvider = ({ children }) => {
@@ -86,7 +91,9 @@ export const StreamProvider = ({ children }) => {
       host: peerHost,
       path: peerPath,
       token: roomcode,
+      secure: PEER_SEC,
     })
+    setPeerServ(peer)
     // setup call - should run when first connected on all users they received
     let initStreamsAud = {}
     let initStreamsVid = {}
@@ -124,7 +131,6 @@ export const StreamProvider = ({ children }) => {
     }
     setAudioStreams(initStreamsAud)
     setVideoStreams(initStreamsVid)
-    setPeerServ(peer)
   }, [isConnected])
 
   useEffect(() => {
