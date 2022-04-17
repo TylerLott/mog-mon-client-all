@@ -55,7 +55,7 @@ const App = () => {
   // Navigate on Login
   useEffect(() => {
     if (isAuth) {
-      navigate(`${HOME_PATH}${type}`)
+      navigate(`${HOME_PATH}/${type}`)
     }
   }, [isAuth])
 
