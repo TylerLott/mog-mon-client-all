@@ -9,14 +9,14 @@ import { useDispatch, useSelector } from "react-redux"
 import { v4 as uuidV4 } from "uuid"
 import { StreamProvider } from "./context/StreamContext"
 
-// let HOME_PATH = "/daddyscummies"
-// let HOST_PATH = "/daddyscummies/host"
-// let PLAYER_PATH = "/daddyscummies/player"
-// if (process.env.NODE_ENV !== "production") {
-let HOME_PATH = "/"
-let HOST_PATH = "/host"
-let PLAYER_PATH = "/player"
-// }
+let HOME_PATH = "/daddyscummies"
+let HOST_PATH = "/daddyscummies/host"
+let PLAYER_PATH = "/daddyscummies/player"
+if (process.env.NODE_ENV !== "production") {
+  HOME_PATH = "/"
+  HOST_PATH = "/host"
+  PLAYER_PATH = "/player"
+}
 
 const App = () => {
   const [roomcode, setRoomcode] = useState(null)
