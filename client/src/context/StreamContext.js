@@ -7,6 +7,7 @@ let PEER_SEC = true
 if (process.env.NODE_ENV !== "production") {
   PEER_SEC = false
 }
+let peer
 
 export const StreamContext = createContext()
 
@@ -15,7 +16,6 @@ export const StreamProvider = ({ children }) => {
   const [videoStreams, setVideoStreams] = useState({})
   const [myAudio, setMyAudio] = useState(null)
   const [myVideo, setMyVideo] = useState(null)
-  const [peerServ, setPeerServ] = useState(null)
   const [othersType, setOthersType] = useState(null)
   const { users, hostUnmute, remoteMute, eventMute, myMute, deafen, teams } =
     useSelector((store) => store.entities)
@@ -87,7 +87,7 @@ export const StreamProvider = ({ children }) => {
   useEffect(() => {
     if (!isConnected) return
     // define peer stuff here
-    const peer = new Peer(userId, {
+    peer = new Peer(userId, {
       host: peerHost,
       path: peerPath,
       token: roomcode,
@@ -116,7 +116,6 @@ export const StreamProvider = ({ children }) => {
         ],
       },
     })
-    setPeerServ(peer)
     // setup call - should run when first connected on all users they received
     let initStreamsAud = {}
     let initStreamsVid = {}
@@ -126,6 +125,7 @@ export const StreamProvider = ({ children }) => {
       Object.keys(users).forEach((user) => {
         let conn = peer.connect(user)
         console.log("i am connecting with", user)
+        console.log("our connection is", conn)
         conn.on("open", () => {
           console.log("connect was recieved and opened by ", user)
           conn.send(type)
@@ -157,25 +157,23 @@ export const StreamProvider = ({ children }) => {
   }, [isConnected])
 
   useEffect(() => {
-    if (!peerServ) return
     if (!myAudio) return
     if (!myVideo) return
     // setup connection
-    peerServ.on("connection", (conn) => {
+    peer.on("connection", (conn) => {
       conn.on("data", (othersType) => {
         setOthersType(othersType)
         conn.send(type)
       })
     })
-  }, [peerServ, myAudio, myVideo])
+  }, [myAudio, myVideo])
 
   useEffect(() => {
-    if (!peerServ) return
     if (!othersType) return
 
     let audStreams = { ...audioStreams }
     let vidStreams = { ...videoStreams }
-    peerServ.on("call", (call) => {
+    peer.on("call", (call) => {
       console.log("i was called by", call.peer)
       let outTracks = []
       outTracks = outTracks.concat(myAudio.getAudioTracks())
@@ -199,7 +197,7 @@ export const StreamProvider = ({ children }) => {
         setAudioStreams(audStreams)
       })
     })
-  }, [peerServ, othersType])
+  }, [othersType])
 
   useEffect(() => {
     // check to see if any of the streams have old users, delete if so
