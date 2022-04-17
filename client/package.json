@@ -33,6 +33,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "homepage": "https://ludwigmonday.gg/daddyscummies",
   "eslintConfig": {
     "extends": [
       "react-app",
