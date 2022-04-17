@@ -84,7 +84,6 @@ export const StreamProvider = ({ children }) => {
     // define peer stuff here
     const peer = new Peer(userId, {
       host: peerHost,
-      port: peerPort,
       path: peerPath,
       token: roomcode,
     })
