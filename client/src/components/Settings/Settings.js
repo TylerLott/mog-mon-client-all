@@ -30,7 +30,7 @@ import {
 let VIDEO_SETTINGS = {
   width: { ideal: 1920, max: 1920 },
   height: { ideal: 1080, max: 1080 },
-  frameRate: { ideal: 30, max: 30 },
+  frameRate: { ideal: 50, max: 60 },
   aspectRatio: 1.333333,
 }
 
