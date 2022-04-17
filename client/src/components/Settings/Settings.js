@@ -28,10 +28,9 @@ import {
 } from "../../styles/styleGlobalComponents"
 
 let VIDEO_SETTINGS = {
-  width: { ideal: 1280, max: 1920 },
-  height: { ideal: 720, max: 1080 },
-  frameRate: { ideal: 20, max: 30 },
-
+  width: { ideal: 1920, max: 1920 },
+  height: { ideal: 1080, max: 1080 },
+  frameRate: { ideal: 30, max: 30 },
   aspectRatio: 1.333333,
 }
 
