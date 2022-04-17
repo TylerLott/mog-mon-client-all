@@ -7,6 +7,11 @@ import {
   LogoutClickButton,
 } from "./LogoutButtonComponents"
 
+let HOME_PATH = "/daddyscummies"
+if (process.env.NODE_ENV !== "production") {
+  HOME_PATH = "/"
+}
+
 const LogoutButton = () => {
   let nav = useNavigate()
   const dispatch = useDispatch()
@@ -24,7 +29,7 @@ const LogoutButton = () => {
             window.localStorage.setItem("mondays-userId", null)
             window.localStorage.setItem("mondays-timestamp", null)
             dispatch(authActions.logout())
-            nav("/")
+            nav(HOME_PATH)
           }
         }}
       >
