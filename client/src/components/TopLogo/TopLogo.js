@@ -1,0 +1,14 @@
+import React from "react"
+import { ReactComponent as TopSVG } from "../../icons/mogulMondays.svg"
+import { TopLogoContainer } from "./TopLogoComponents"
+
+const TopLogo = () => {
+  return (
+    <TopLogoContainer>
+      {/* <TopSVG /> */}
+      <img src="/lud-twitter.jfif" alt="top" style={{ width: "100%" }} />
+    </TopLogoContainer>
+  )
+}
+
+export default TopLogo
