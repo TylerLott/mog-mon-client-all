@@ -97,44 +97,46 @@ export const StreamProvider = ({ children }) => {
         iceServers: [{ url: "stun:stun.l.google.com:19302" }],
       },
     })
-    // setup call - should run when first connected on all users they received
-    let initStreamsAud = {}
-    let initStreamsVid = {}
-    console.log("connected to peer", peer)
-    console.log("my id is ", userId)
-    if (users) {
-      Object.keys(users).forEach((user) => {
-        let conn = peer.connect(user)
-        console.log("i am connecting with", user)
-        console.log("our connection is", conn)
-        conn.on("open", () => {
-          console.log("connect was recieved and opened by ", user)
-          conn.send(type)
-          conn.on("data", (othersType) => {
-            let outTracks = []
-            outTracks = outTracks.concat(myAudio.getAudioTracks())
-            outTracks = outTracks.concat(myVideo.getVideoTracks())
+    setTimeout(() => {
+      // setup call - should run when first connected on all users they received
+      let initStreamsAud = {}
+      let initStreamsVid = {}
+      console.log("connected to peer", peer)
+      console.log("my id is ", userId)
+      if (users) {
+        Object.keys(users).forEach((user) => {
+          let conn = peer.connect(user)
+          console.log("i am connecting with", user)
+          console.log("our connection is", conn)
+          conn.on("open", () => {
+            console.log("connect was recieved and opened by ", user)
+            conn.send(type)
+            conn.on("data", (othersType) => {
+              let outTracks = []
+              outTracks = outTracks.concat(myAudio.getAudioTracks())
+              outTracks = outTracks.concat(myVideo.getVideoTracks())
 
-            console.log("calling user", conn.peer)
-            let call = peer.call(conn.peer, new MediaStream(outTracks))
-            call.on("stream", (remoteStream) => {
-              if (type === "host") {
-                initStreamsVid[call.peer] = {
-                  stream: new MediaStream(remoteStream.getVideoTracks()),
+              console.log("calling user", conn.peer)
+              let call = peer.call(conn.peer, new MediaStream(outTracks))
+              call.on("stream", (remoteStream) => {
+                if (type === "host") {
+                  initStreamsVid[call.peer] = {
+                    stream: new MediaStream(remoteStream.getVideoTracks()),
+                    muted: getMute(call.peer),
+                  }
+                }
+                initStreamsAud[call.peer] = {
+                  stream: new MediaStream(remoteStream.getAudioTracks()),
                   muted: getMute(call.peer),
                 }
-              }
-              initStreamsAud[call.peer] = {
-                stream: new MediaStream(remoteStream.getAudioTracks()),
-                muted: getMute(call.peer),
-              }
+              })
             })
           })
         })
-      })
-    }
-    setAudioStreams(initStreamsAud)
-    setVideoStreams(initStreamsVid)
+      }
+      setAudioStreams(initStreamsAud)
+      setVideoStreams(initStreamsVid)
+    }, 1500)
   }, [isConnected])
 
   useEffect(() => {
