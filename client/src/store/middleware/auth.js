@@ -3,6 +3,7 @@ import { authActions } from "../authSlice"
 import { entitiesActions } from "../entitiesSlice"
 import { uiActions } from "../uiSlice"
 import axios from "axios"
+import { peerActions } from "../peerSlice"
 
 const handleError = (func, err) => {
   try {
@@ -13,7 +14,7 @@ const handleError = (func, err) => {
 }
 
 let AUTH_API_URL = "http://localhost:5000/api/auth"
-let SOCKET_PATH = "/"
+let SOCKET_PATH = "/socket.io"
 if (process.env.NODE_ENV === "production") {
   AUTH_API_URL = "https://ludwigmonday.gg/api/spermbank"
   SOCKET_PATH = "/api/stepbrother/socket.io"
@@ -188,6 +189,33 @@ const authMiddleware = (store) => {
           })
         )
       })
+      socket.on("offer-received", (offer) => {
+        console.log("offer-received", offer)
+        store.dispatch(
+          peerActions.newOffer({
+            peerId: offer.senderId,
+            offer: offer.offer,
+          })
+        )
+      })
+      socket.on("answer-received", (answer) => {
+        console.log("answer-received", answer)
+        store.dispatch(
+          peerActions.newAnswer({
+            peerId: answer.senderId,
+            answer: answer.answer,
+          })
+        )
+      })
+      socket.on("trickle-ice", (ice) => {
+        console.log("ice")
+        store.dispatch(
+          peerActions.createIceCandidates({
+            peerId: ice.senderId,
+            iceCand: ice.iceCand,
+          })
+        )
+      })
       ////////////////////////////////////////////////////////////////////////////////
       // End Socket Setup
       ////////////////////////////////////////////////////////////////////////////////
@@ -289,6 +317,36 @@ const authMiddleware = (store) => {
           hostId: store.getState().auth.userId,
         })
       }, err)
+    }
+    ////////////////////////////////////////////////////////////////
+    // Peer actions
+    ////////////////////////////////////////////////////////////////
+    if (peerActions.createOffer.match(action) && isConnectionEstablished) {
+      handleError(() => {
+        socket.emit("offer-created", {
+          receiverId: action.payload.receiverId,
+          senderId: action.payload.senderId,
+          offer: action.payload.offer,
+        })
+      })
+    }
+    if (peerActions.createAnswer.match(action) && isConnectionEstablished) {
+      handleError(() => {
+        socket.emit("answer-created", {
+          receiverId: action.payload.receiverId,
+          senderId: action.payload.senderId,
+          answer: action.payload.answer,
+        })
+      })
+    }
+    if (peerActions.trickleIce.match(action)) {
+      handleError(() => {
+        socket.emit("trickle-ice", {
+          receiverId: action.payload.receiverId,
+          senderId: action.payload.senderId,
+          iceCand: action.payload.iceCand,
+        })
+      })
     }
     if (err) {
       console.log(err)

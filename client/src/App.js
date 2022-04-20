@@ -7,13 +7,13 @@ import "./App.css"
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute"
 import { useDispatch, useSelector } from "react-redux"
 import { v4 as uuidV4 } from "uuid"
-import { StreamProvider } from "./context/StreamContext"
+import { StreamProvider } from "./context/newStreamContext"
 
 let HOME_PATH = "/daddyscummies"
 let HOST_PATH = "/daddyscummies/host"
 let PLAYER_PATH = "/daddyscummies/player"
 if (process.env.NODE_ENV !== "production") {
-  HOME_PATH = "/"
+  HOME_PATH = ""
   HOST_PATH = "/host"
   PLAYER_PATH = "/player"
 }

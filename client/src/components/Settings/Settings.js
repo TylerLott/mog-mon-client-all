@@ -20,7 +20,7 @@ import { CircleBool } from "../Icons/Icons"
 import SettingsIcon from "@mui/icons-material/Settings"
 import { useDispatch, useSelector } from "react-redux"
 import { authActions } from "../../store/authSlice"
-import { StreamContext } from "../../context/StreamContext"
+import { StreamContext } from "../../context/newStreamContext"
 import {
   UIContainer,
   UIContainerTitle,
@@ -30,7 +30,7 @@ import {
 let VIDEO_SETTINGS = {
   width: { ideal: 1280, max: 1920 },
   height: { ideal: 720, max: 1080 },
-  frameRate: { ideal: 50, max: 60 },
+  frameRate: { ideal: 40, max: 60 },
   aspectRatio: 1.333333,
 }
 

@@ -3,11 +3,13 @@ import authMiddleware from "./middleware/auth"
 import authReducer from "./authSlice"
 import entitiesReducer from "./entitiesSlice"
 import uiReducer from "./uiSlice"
+import peerReducer from "./peerSlice"
 
 const rootReducer = combineReducers({
   auth: authReducer,
   entities: entitiesReducer,
   ui: uiReducer,
+  peers: peerReducer,
 })
 
 const configStore = () =>

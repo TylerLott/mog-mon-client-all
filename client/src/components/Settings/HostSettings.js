@@ -12,7 +12,7 @@ import {
 import SettingsIcon from "@mui/icons-material/Settings"
 import { useDispatch, useSelector } from "react-redux"
 import { authActions } from "../../store/authSlice"
-import { StreamContext } from "../../context/StreamContext"
+import { StreamContext } from "../../context/newStreamContext"
 import Button from "../Button/Button"
 import { CircleBool } from "../Icons/Icons"
 import {

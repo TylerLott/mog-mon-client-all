@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useContext, useState, useMemo } from "react"
 import { useSelector } from "react-redux"
 import StreamerScreen from "../StreamerScreen/StreamerScreen"
-import { StreamContext } from "../../context/StreamContext"
+import { StreamContext } from "../../context/newStreamContext"
 import {
   HostMain,
   HostSmall,
@@ -35,7 +35,7 @@ const StreamView = () => {
   const { userId, streamerName, attributes, type } = useSelector(
     (store) => store.auth
   )
-  const { videoStreams, myVideo } = useContext(StreamContext)
+  const { connections, myVideo } = useContext(StreamContext)
   // state
   const [currentTeam, setCurrentTeam] = useState(null) // list of players
   const [currentPlayer, setCurrentPlayer] = useState(null) // one player
@@ -80,9 +80,11 @@ const StreamView = () => {
     ) {
       return
     }
-    if (videoStreams.hasOwnProperty(viewing)) {
+    if (connections.hasOwnProperty(viewing) && connections[viewing].vidTrack) {
       // set main cam to player
-      playerMain.current.srcObject = videoStreams[viewing].stream
+      playerMain.current.srcObject = new MediaStream([
+        connections[viewing].vidTrack,
+      ])
       let plr = { ...allUsers[viewing] }
       plr.team = Object.entries(allTeams)
         .map(([key, val]) => [{ key, ...val }])
@@ -93,19 +95,27 @@ const StreamView = () => {
       // loop through team[viewing].players and set the 4 cam refs
       topLeft.current.srcObject =
         allTeams[viewing].players.length > 0
-          ? videoStreams[allTeams[viewing].players[0]].stream
+          ? new MediaStream([
+              connections[allTeams[viewing].players[0]].vidTrack,
+            ])
           : null
       topRight.current.srcObject =
         allTeams[viewing].players.length > 1
-          ? videoStreams[allTeams[viewing].players[1]].stream
+          ? new MediaStream([
+              connections[allTeams[viewing].players[0]].vidTrack,
+            ])
           : null
       bottomLeft.current.srcObject =
         allTeams[viewing].players.length > 2
-          ? videoStreams[allTeams[viewing].players[2]].stream
+          ? new MediaStream([
+              connections[allTeams[viewing].players[0]].vidTrack,
+            ])
           : null
       bottomRight.current.srcObject =
         allTeams[viewing].players.length > 3
-          ? videoStreams[allTeams[viewing].players[3]].stream
+          ? new MediaStream([
+              connections[allTeams[viewing].players[0]].vidTrack,
+            ])
           : null
       setCurrentTeam(allTeams[viewing].players.map((x) => allUsers[x]))
       setCurrentPlayer(null)
@@ -119,12 +129,11 @@ const StreamView = () => {
     bottomRight,
     allUsers,
     allTeams,
-    videoStreams,
+    connections,
   ])
 
   useEffect(() => {
     setToggle(!toggle)
-    console.log("video streams", videoStreams)
     console.log("current team", currentTeam)
     console.log("current player", currentPlayer)
     console.log("viewing", viewing)

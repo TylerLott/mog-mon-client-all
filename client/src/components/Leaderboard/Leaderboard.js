@@ -131,7 +131,13 @@ const Leaderboard = () => {
       ...val.attributes,
     }))
     attrArr = attrArr.filter((player) => player.name !== "")
-    if (myType !== "host") {
+    if (
+      myType !== "host" &&
+      !Object.entries(attrArr).reduce((agg, [key, val]) => {
+        agg = agg || val.id === myId
+        return agg
+      }, false)
+    ) {
       attrArr = attrArr.concat({ id: myId, name: myName, ...myAttrs })
     }
     if (attrArr.length > 0) {
