@@ -5,6 +5,7 @@ const initialState = {
   users: {
     // userId: {
     //   team
+    //   type
     //   streamerName
     //   gameName
     //   attributes: {

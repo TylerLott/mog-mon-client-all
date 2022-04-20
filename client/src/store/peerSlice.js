@@ -32,7 +32,7 @@ const slice = createSlice({
       peers.sendScreen[action.payload.peerId] = false
     },
     createIceCandidates: (peers, action) => {
-      peers.iceCandidates[action.peerId] = action.payload.iceCand
+      peers.iceCandidates[action.payload.peerId] = action.payload.iceCand
     },
     trickleIce: () => {},
     createOffer: () => {},

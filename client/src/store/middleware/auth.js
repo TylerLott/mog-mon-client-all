@@ -208,7 +208,6 @@ const authMiddleware = (store) => {
         )
       })
       socket.on("trickle-ice", (ice) => {
-        console.log("ice")
         store.dispatch(
           peerActions.createIceCandidates({
             peerId: ice.senderId,
