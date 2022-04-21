@@ -25,14 +25,42 @@ import { entitiesActions } from "../../store/entitiesSlice"
 
 const Team = ({ name, team }) => {
   const [dropdown, setDropdown] = useState(false)
+  const [myTeam, setMyTeam] = useState({})
   const { type, userId } = useSelector((store) => store.auth)
   const { listening, viewing, speaking, teamname } = useSelector(
     (store) => store.ui
   )
+  const { teams } = useSelector((store) => store.entities)
   const dispatch = useDispatch()
 
   const handleView = () => {
-    dispatch(uiActions.setViewing({ viewing: viewing !== name ? name : null }))
+    let view = teams[name].players.reduce(
+      (agg, player) => ({ ...agg, [player]: { isConnected: true } }),
+      {}
+    )
+    if (JSON.stringify(viewing) !== JSON.stringify(view)) {
+      setMyTeam(view)
+      dispatch(
+        uiActions.setViewing({
+          viewing: view,
+        })
+      )
+      Object.keys(view).forEach((key) => {
+        dispatch(
+          uiActions.sendMeVideo({
+            senderId: userId,
+            receiverId: key,
+          })
+        )
+      })
+    } else {
+      setMyTeam({})
+      dispatch(
+        uiActions.setViewing({
+          viewing: null,
+        })
+      )
+    }
   }
 
   const handleListen = () => {
@@ -117,8 +145,12 @@ const Team = ({ name, team }) => {
                 {speaking !== name && <MicOffIcon />}
               </TeamButton>
               <TeamButton onClick={handleView}>
-                {viewing === name && <DesktopWindowsIcon />}
-                {viewing !== name && <DesktopAccessDisabledIcon />}
+                {JSON.stringify(viewing) === JSON.stringify(myTeam) && (
+                  <DesktopWindowsIcon />
+                )}
+                {JSON.stringify(viewing) !== JSON.stringify(myTeam) && (
+                  <DesktopAccessDisabledIcon />
+                )}
               </TeamButton>
             </>
           )}

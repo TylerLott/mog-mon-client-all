@@ -12,6 +12,7 @@ const initialState = {
   viewing: null, // should be a userId or teamname or 'leaderboard'
   speaking: null, // should be a userId or teamname
   leaderboardType: false, // false = players, true = teams
+  sendVideo: null,
 }
 
 const slice = createSlice({
@@ -48,6 +49,19 @@ const slice = createSlice({
     toggleLeaderboardType: (ui) => {
       ui.leaderboardType = !ui.leaderboardType
     },
+    sendVideo: (ui, action) => {
+      ui.sendVideo = action.payload.peerId
+    },
+    stopVideo: (ui) => {
+      ui.sendVideo = null
+    },
+    sentVideo: (ui, action) => {
+      if (ui.viewing && action.payload.peerId in ui.viewing) {
+        ui.viewing[action.payload.peerId].isConnected = true
+      }
+    },
+    sendMeVideo: () => {},
+    iSentVideo: () => {},
   },
 })
 

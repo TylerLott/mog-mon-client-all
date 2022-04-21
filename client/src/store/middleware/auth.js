@@ -215,6 +215,26 @@ const authMiddleware = (store) => {
           })
         )
       })
+      // to player
+      socket.on("send-video", (req) => {
+        store.dispatch(
+          uiActions.sendVideo({
+            peerId: req.senderId,
+          })
+        )
+      })
+      // to player
+      socket.on("stop-video", (req) => {
+        store.dispatch(uiActions.stopVideo())
+      })
+      // to host
+      socket.on("sent-video", (req) => {
+        store.dispatch(
+          uiActions.sentVideo({
+            peerId: req.senderId,
+          })
+        )
+      })
       ////////////////////////////////////////////////////////////////////////////////
       // End Socket Setup
       ////////////////////////////////////////////////////////////////////////////////
@@ -346,6 +366,35 @@ const authMiddleware = (store) => {
           iceCand: action.payload.iceCand,
         })
       })
+    }
+    //// Host video
+    if (uiActions.sendMeVideo.match(action)) {
+      handleError(() => {
+        socket.emit("send-me-video", {
+          senderId: action.payload.senderId,
+          receiverId: action.payload.receiverId,
+        })
+      })
+    }
+    if (uiActions.iSentVideo.match(action)) {
+      handleError(() => {
+        socket.emit("i-sent-video", {
+          receiverId: action.payload.receiverId,
+          senderId: action.payload.senderId,
+        })
+      })
+    }
+    if (uiActions.setViewing.match(action)) {
+      let oldView = store.getState().ui.viewing
+      if (oldView && oldView !== "leaderboard") {
+        Object.keys(oldView).forEach((player) => {
+          handleError(() => {
+            socket.emit("stop-video", {
+              receiverId: player,
+            })
+          })
+        })
+      }
     }
     if (err) {
       console.log(err)

@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useContext, useState, useMemo } from "react"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import StreamerScreen from "../StreamerScreen/StreamerScreen"
 import { StreamContext } from "../../context/newStreamContext"
 import {
@@ -35,13 +35,14 @@ const StreamView = () => {
   const { userId, streamerName, attributes, type } = useSelector(
     (store) => store.auth
   )
-  const { connections, myVideo } = useContext(StreamContext)
+  const { connections, myVideo, vidTransceivers } = useContext(StreamContext)
   // state
   const [currentTeam, setCurrentTeam] = useState(null) // list of players
   const [currentPlayer, setCurrentPlayer] = useState(null) // one player
   const [toggle, setToggle] = useState(false)
   const [loading, setLoading] = useState("slide-in-out-left")
   const [leaderboardDelay, setLeaderboardDelay] = useState(leaderboardType)
+  const [currentTeamName, setCurrentTeamName] = useState(null)
   // player cams
   const topLeft = useRef()
   const topRight = useRef()
@@ -63,6 +64,7 @@ const StreamView = () => {
   // set player cams
   useEffect(() => {
     if (!viewing) {
+      setToggle(!toggle)
       setCurrentPlayer(null)
       setCurrentTeam(null)
       return
@@ -70,6 +72,7 @@ const StreamView = () => {
     if (viewing === "leaderboard") {
       setCurrentPlayer(null)
       setCurrentTeam(null)
+      return
     }
     if (!playerMain.current) return
     if (
@@ -80,45 +83,58 @@ const StreamView = () => {
     ) {
       return
     }
-    if (connections.hasOwnProperty(viewing) && connections[viewing].vidTrack) {
-      // set main cam to player
-      playerMain.current.srcObject = new MediaStream([
-        connections[viewing].vidTrack,
-      ])
-      let plr = { ...allUsers[viewing] }
-      plr.team = Object.entries(allTeams)
-        .map(([key, val]) => [{ key, ...val }])
-        .filter((x) => x[0].players.includes(viewing))[0][0].key
-      setCurrentPlayer(plr)
-      setCurrentTeam(null)
-    } else if (allTeams.hasOwnProperty(viewing)) {
-      // loop through team[viewing].players and set the 4 cam refs
-      topLeft.current.srcObject =
-        allTeams[viewing].players.length > 0
-          ? new MediaStream([
-              connections[allTeams[viewing].players[0]].vidTrack,
+
+    let viewArr = Object.entries(viewing)
+    if (viewArr.length > 1) {
+      Object.entries(viewing).forEach(([key, val], ind) => {
+        if (val.isConnected) {
+          if (ind === 0) {
+            topLeft.current.srcObject = new MediaStream([
+              vidTransceivers[key].receiver.track,
             ])
-          : null
-      topRight.current.srcObject =
-        allTeams[viewing].players.length > 1
-          ? new MediaStream([
-              connections[allTeams[viewing].players[0]].vidTrack,
+          }
+          if (ind === 1) {
+            topRight.current.srcObject = new MediaStream([
+              vidTransceivers[key].receiver.track,
             ])
-          : null
-      bottomLeft.current.srcObject =
-        allTeams[viewing].players.length > 2
-          ? new MediaStream([
-              connections[allTeams[viewing].players[0]].vidTrack,
+          }
+          if (ind === 2) {
+            bottomLeft.current.srcObject = new MediaStream([
+              vidTransceivers[key].receiver.track,
             ])
-          : null
-      bottomRight.current.srcObject =
-        allTeams[viewing].players.length > 3
-          ? new MediaStream([
-              connections[allTeams[viewing].players[0]].vidTrack,
+          }
+          if (ind === 3) {
+            bottomRight.current.srcObject = new MediaStream([
+              vidTransceivers[key].receiver.track,
             ])
-          : null
-      setCurrentTeam(allTeams[viewing].players.map((x) => allUsers[x]))
-      setCurrentPlayer(null)
+          }
+        }
+      })
+      if (
+        viewArr.reduce((agg, [key, val]) => {
+          return agg && val.isConnected
+        }, true)
+      ) {
+        let t
+        Object.entries(allTeams).forEach(([key, val]) => {
+          if (val.players.includes(viewArr[0][0])) {
+            t = key
+          }
+        })
+        setCurrentTeam(Object.keys(viewing).map((key) => allUsers[key]))
+        setCurrentTeamName(t)
+        setCurrentPlayer(null)
+        setToggle(!toggle)
+      }
+    } else {
+      if (viewArr[0][1].isConnected) {
+        playerMain.current.srcObject = new MediaStream([
+          vidTransceivers[viewArr[0][0]].receiver.track,
+        ])
+        setCurrentPlayer(viewArr[0][0])
+        setCurrentTeam(null)
+        setToggle(!toggle)
+      }
     }
   }, [
     viewing,
@@ -131,17 +147,6 @@ const StreamView = () => {
     allTeams,
     connections,
   ])
-
-  useEffect(() => {
-    setToggle(!toggle)
-    console.log("current team", currentTeam)
-    console.log("current player", currentPlayer)
-    console.log("viewing", viewing)
-    console.log("all teams", allTeams)
-    console.log("all users", allUsers)
-    console.log("team vid refs", topLeft, topRight, bottomLeft, bottomRight)
-    console.log("player vid ref", playerMain)
-  }, [viewing])
 
   useEffect(() => {
     if (viewing === "leaderboard") {
@@ -254,10 +259,10 @@ const StreamView = () => {
       <TeamName
         team={
           currentTeam && viewing
-            ? viewing
+            ? currentTeamName
             : currentPlayer && viewing
             ? currentPlayer.team
-            : viewing
+            : currentTeamName
         }
       />
     )

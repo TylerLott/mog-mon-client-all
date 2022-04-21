@@ -1,6 +1,7 @@
 import React, { useRef } from "react"
 import { createContext, useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
+import { uiActions } from "../store/uiSlice"
 import AudioStream from "./AudioStream"
 import { createAnswer, createOffer, createPeerConnection } from "./rtcHelpers"
 
@@ -17,12 +18,28 @@ export const StreamProvider = ({ children }) => {
   const [myVideo, setMyVideo] = useState(null)
   const { users, hostUnmute, remoteMute, eventMute, myMute, deafen, teams } =
     useSelector((store) => store.entities)
-  const { offers, answers, sendScreen, iceCandidates } = useSelector(
-    (store) => store.peers
-  )
+  const { offers, answers, iceCandidates } = useSelector((store) => store.peers)
   const { isConnected, userId, type } = useSelector((store) => store.auth)
-  const { listening } = useSelector((store) => store.ui)
+  const { listening, sendVideo } = useSelector((store) => store.ui)
   const dispatch = useDispatch()
+
+  useEffect(() => {
+    window.addEventListener("beforeunload", () => {
+      Object.keys(connections).forEach((user) => {
+        connections[user].pc.getLocalStreams().forEach((stream) => {
+          stream.getTracks().forEach((t) => {
+            t.stop()
+            stream.removeTrack(t)
+          })
+        })
+        connections[user].pc.close()
+        setConnections((cons) => {
+          delete cons[user]
+          return cons
+        })
+      })
+    })
+  }, [connections])
 
   //////////////////////////////////////////////////////////////////////////////
   //  Mute Options
@@ -118,6 +135,24 @@ export const StreamProvider = ({ children }) => {
   //              - also dispatch an action 'video-sent' to store with the userId
   //        - if it is not present, make sure that replaceTrack is null
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  useEffect(() => {
+    console.log("sending vid", sendVideo)
+    if (sendVideo && vidTransceivers.hasOwnProperty(sendVideo)) {
+      vidTransceivers[sendVideo].sender.replaceTrack(myVideo.getTracks()[0])
+      console.log(vidTransceivers[sendVideo].sender)
+      dispatch(
+        uiActions.iSentVideo({ senderId: userId, receiverId: sendVideo })
+      )
+      console.log("i sent video")
+    } else {
+      // replace track all
+      Object.entries(vidTransceivers).forEach(([key, val]) => {
+        console.log("removeing track", key, val)
+        val.sender.replaceTrack(null)
+      })
+    }
+  }, [sendVideo])
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // END Video Stuff
@@ -244,7 +279,7 @@ export const StreamProvider = ({ children }) => {
         })
       }
     })
-  })
+  }, [connections, users])
   ////////////////////////////////////////////////////////////////////////////////
   // END WebRTC Stuff
   ////////////////////////////////////////////////////////////////////////////////

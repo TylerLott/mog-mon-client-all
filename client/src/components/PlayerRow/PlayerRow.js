@@ -22,9 +22,26 @@ const PlayerRow = ({ player, leaderboard = false }) => {
   const dispatch = useDispatch()
 
   const handleViewing = () => {
-    dispatch(
-      uiActions.setViewing({ viewing: viewing !== player ? player : null })
-    )
+    let play = { [player]: { isConnected: true } }
+    if (JSON.stringify(viewing) !== JSON.stringify(play)) {
+      dispatch(
+        uiActions.setViewing({
+          viewing: play,
+        })
+      )
+      dispatch(
+        uiActions.sendMeVideo({
+          senderId: userId,
+          receiverId: player,
+        })
+      )
+    } else {
+      dispatch(
+        uiActions.setViewing({
+          viewing: null,
+        })
+      )
+    }
   }
   const handleListening = () => {
     dispatch(
@@ -69,10 +86,12 @@ const PlayerRow = ({ player, leaderboard = false }) => {
                 )}
               </PlayerRowOptionsButton>
               <PlayerRowOptionsButton onClick={handleViewing}>
-                {viewing === player && (
+                {JSON.stringify(viewing) ===
+                  JSON.stringify({ [player]: { isConnected: true } }) && (
                   <DesktopWindowsIcon style={{ fontSize: "140%" }} />
                 )}
-                {viewing !== player && (
+                {JSON.stringify(viewing) !==
+                  JSON.stringify({ [player]: { isConnected: true } }) && (
                   <DesktopAccessDisabledIcon style={{ fontSize: "140%" }} />
                 )}
               </PlayerRowOptionsButton>
