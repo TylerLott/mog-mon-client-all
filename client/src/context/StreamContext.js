@@ -103,22 +103,16 @@ export const StreamProvider = ({ children }) => {
       let initStreamsAud = {}
       let initStreamsVid = {}
       setPeerConnected(true)
-      console.log("connected to peer", peer)
-      console.log("my id is ", userId)
       if (users) {
         Object.keys(users).forEach((user) => {
           let conn = peer.connect(user)
-          console.log("i am connecting with", user)
-          console.log("our connection is", conn)
           conn.on("open", () => {
-            console.log("connect was recieved and opened by ", user)
             conn.send(type)
             conn.on("data", (othersType) => {
               let outTracks = []
               outTracks = outTracks.concat(myAudio.getAudioTracks())
               outTracks = outTracks.concat(myVideo.getVideoTracks())
 
-              console.log("calling user", conn.peer)
               let call = peer.call(conn.peer, new MediaStream(outTracks))
               const vid_sender = call.peerConnection
                 .getSenders()
@@ -130,7 +124,6 @@ export const StreamProvider = ({ children }) => {
               vid_params.encodings[0].maxBitrate = 4000000
               vid_sender.setParameters(vid_params).then(() => {
                 call.on("stream", (remoteStream) => {
-                  console.log("here are the tracks", remoteStream.getTracks())
                   if (type === "host") {
                     initStreamsVid[call.peer] = {
                       stream: new MediaStream(remoteStream.getVideoTracks()),
@@ -172,16 +165,12 @@ export const StreamProvider = ({ children }) => {
     let audStreams = { ...audioStreams }
     let vidStreams = { ...videoStreams }
     peer.on("call", (call) => {
-      console.log("i was called by", call.peer)
       let outTracks = []
       outTracks = outTracks.concat(myAudio.getAudioTracks())
       outTracks = outTracks.concat(myVideo.getVideoTracks())
       let test = new MediaStream(outTracks)
-      console.log("i answered with", test)
       call.answer(test)
       call.on("stream", (remoteStream) => {
-        console.log("they answered with", remoteStream)
-        console.log("here are the tracks", remoteStream.getTracks())
         if (type === "host") {
           vidStreams[call.peer] = {
             muted: getMute(call.peer),

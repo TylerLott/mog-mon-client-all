@@ -137,18 +137,14 @@ export const StreamProvider = ({ children }) => {
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   useEffect(() => {
-    console.log("sending vid", sendVideo)
     if (sendVideo && vidTransceivers.hasOwnProperty(sendVideo)) {
       vidTransceivers[sendVideo].sender.replaceTrack(myVideo.getTracks()[0])
-      console.log(vidTransceivers[sendVideo].sender)
       dispatch(
         uiActions.iSentVideo({ senderId: userId, receiverId: sendVideo })
       )
-      console.log("i sent video")
     } else {
       // replace track all
       Object.entries(vidTransceivers).forEach(([key, val]) => {
-        console.log("removeing track", key, val)
         val.sender.replaceTrack(null)
       })
     }

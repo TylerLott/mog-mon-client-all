@@ -190,7 +190,6 @@ const authMiddleware = (store) => {
         )
       })
       socket.on("offer-received", (offer) => {
-        console.log("offer-received", offer)
         store.dispatch(
           peerActions.newOffer({
             peerId: offer.senderId,
@@ -199,7 +198,6 @@ const authMiddleware = (store) => {
         )
       })
       socket.on("answer-received", (answer) => {
-        console.log("answer-received", answer)
         store.dispatch(
           peerActions.newAnswer({
             peerId: answer.senderId,

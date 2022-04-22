@@ -131,7 +131,14 @@ const StreamView = () => {
         playerMain.current.srcObject = new MediaStream([
           vidTransceivers[viewArr[0][0]].receiver.track,
         ])
-        setCurrentPlayer(viewArr[0][0])
+        let t
+        Object.entries(allTeams).forEach(([key, val]) => {
+          if (val.players.includes(viewArr[0][0])) {
+            t = key
+          }
+        })
+        setCurrentTeamName(t)
+        setCurrentPlayer(allUsers[viewArr[0][0]])
         setCurrentTeam(null)
         setToggle(!toggle)
       }
@@ -255,17 +262,7 @@ const StreamView = () => {
   }, [currentTeam])
 
   const TeamNameMemo = useMemo(() => {
-    return (
-      <TeamName
-        team={
-          currentTeam && viewing
-            ? currentTeamName
-            : currentPlayer && viewing
-            ? currentPlayer.team
-            : currentTeamName
-        }
-      />
-    )
+    return <TeamName team={currentTeamName} />
   }, [viewing, currentPlayer, currentTeam])
 
   // leaderboard
