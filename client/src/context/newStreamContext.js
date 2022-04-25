@@ -284,10 +284,12 @@ export const StreamProvider = ({ children }) => {
 
   useEffect(() => {
     if (eventMute) {
-      whiteNoise.volume = 0.5
+      whiteNoise.volume = 0.3
+      whiteNoise.loop = true
       whiteNoise.play()
     } else {
-      whiteNoise.volume = 0.5
+      whiteNoise.volume = 0.3
+      whiteNoise.loop = true
       whiteNoise.pause()
     }
   }, [eventMute, whiteNoise])
