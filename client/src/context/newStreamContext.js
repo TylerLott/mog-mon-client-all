@@ -1,4 +1,4 @@
-import React, { useRef } from "react"
+import React from "react"
 import { createContext, useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { uiActions } from "../store/uiSlice"
@@ -290,7 +290,7 @@ export const StreamProvider = ({ children }) => {
       whiteNoise.volume = 0.5
       whiteNoise.pause()
     }
-  }, [eventMute])
+  }, [eventMute, whiteNoise])
 
   return (
     <StreamContext.Provider
