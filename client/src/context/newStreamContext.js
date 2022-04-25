@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { uiActions } from "../store/uiSlice"
 import AudioStream from "./AudioStream"
 import { createAnswer, createOffer, createPeerConnection } from "./rtcHelpers"
+import wnoise from "../sounds/white_noise.wav"
 
 const MAX_BITRATE = 4000000
 const MAX_FRAMERATE = 60.0
@@ -16,6 +17,7 @@ export const StreamProvider = ({ children }) => {
   const [vidTransceivers, setVidTransceivers] = useState({})
   const [myAudio, setMyAudio] = useState(null)
   const [myVideo, setMyVideo] = useState(null)
+  const whiteNoise = new Audio(wnoise)
   const { users, hostUnmute, remoteMute, eventMute, myMute, deafen, teams } =
     useSelector((store) => store.entities)
   const { offers, answers, iceCandidates } = useSelector((store) => store.peers)
@@ -279,6 +281,16 @@ export const StreamProvider = ({ children }) => {
   ////////////////////////////////////////////////////////////////////////////////
   // END WebRTC Stuff
   ////////////////////////////////////////////////////////////////////////////////
+
+  useEffect(() => {
+    if (eventMute) {
+      whiteNoise.volume = 0.5
+      whiteNoise.play()
+    } else {
+      whiteNoise.volume = 0.5
+      whiteNoise.pause()
+    }
+  }, [eventMute])
 
   return (
     <StreamContext.Provider

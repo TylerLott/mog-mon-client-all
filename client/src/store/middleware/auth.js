@@ -174,12 +174,12 @@ const authMiddleware = (store) => {
           })
         )
       })
-      socket.on("viewer-event-mute", (eventMute) => {
+      socket.on("viewer-event", (eventMute) => {
         store.dispatch(entitiesActions.changeMute({ eventMute }))
         setTimeout(
           () =>
             store.dispatch(entitiesActions.changeMute({ eventMute: false })),
-          store.getState().entities.eventSettings.timeout
+          store.getState().entities.eventSettings.teamCooldown
         )
       })
       socket.on("host-unmute", (host) => {
