@@ -20,7 +20,6 @@ import {
   UIContainerTitle,
   UIContainerTop,
 } from "../../styles/styleGlobalComponents"
-import { entitiesActions } from "../../store/entitiesSlice"
 
 const HostSettings = () => {
   const [editable, setEditable] = useState(true)
@@ -48,7 +47,7 @@ const HostSettings = () => {
       })
       .then((stream) => {
         stream.getVideoTracks()[0].onended = () => {
-          dispatch(authActions.setVideo({ videoStream: null }))
+          dispatch(authActions.setVideo({ myVideo: null }))
         }
         dispatch(authActions.setVideo({ myVideo: stream.id }))
         setMyVideo(stream)
