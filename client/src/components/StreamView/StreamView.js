@@ -127,7 +127,7 @@ const StreamView = () => {
         setToggle(!toggle)
       }
     } else {
-      if (viewArr[0][1].isConnected) {
+      if (viewArr[0].length > 1 && viewArr[0][1].isConnected) {
         playerMain.current.srcObject = new MediaStream([
           vidTransceivers[viewArr[0][0]].receiver.track,
         ])
