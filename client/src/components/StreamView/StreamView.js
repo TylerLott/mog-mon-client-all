@@ -70,6 +70,7 @@ const StreamView = () => {
       return
     }
     if (viewing === "leaderboard") {
+      setToggle(!toggle)
       setCurrentPlayer(null)
       setCurrentTeam(null)
       return
